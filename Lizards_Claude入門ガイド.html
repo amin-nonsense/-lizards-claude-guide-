@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Lizards × Claude 入門ガイド</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+    background: #ffffff;
+    color: #1a1a1a;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .guide { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 32px; }
+  .step { margin-bottom: 32px; }
+  .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: white; flex-shrink: 0;
+  }
+  .step-num.s0 { background: #C53030; }
+  .step-num.s1 { background: #4A7C59; }
+  .step-num.s2 { background: #2B6CB0; }
+  .step-num.s3 { background: #744210; }
+  .step-title { font-size: 16px; font-weight: 700; }
+  .folder-tree {
+    background: #f7f7f7;
+    border-radius: 8px; padding: 16px 20px;
+    font-family: 'Menlo', 'Monaco', monospace;
+    font-size: 13px; margin-bottom: 8px; line-height: 2;
+  }
+  .folder { color: #2B6CB0; font-weight: 600; }
+  .file-comment { color: #888; }
+  .note {
+    font-size: 12px; color: #666;
+    background: #FFFBEB; border: 1.5px solid #D69E2E;
+    border-radius: 6px; padding: 8px 12px; margin: 8px 0;
+  }
+  .note strong { color: #744210; }
+  .highlight-box { border-radius: 8px; padding: 14px 16px; margin: 10px 0; }
+  .highlight-box.red { background: #FFF5F5; border: 1.5px solid #C53030; }
+  .highlight-box.green { background: #F0FFF4; border: 1.5px solid #4A7C59; }
+  .highlight-box.blue { background: #EBF8FF; border: 1.5px solid #2B6CB0; }
+  .prompt-box {
+    background: #1a1a2e; border-radius: 8px; padding: 14px 18px;
+    font-family: monospace; font-size: 12px; color: #e0e0e0; line-height: 1.8; margin: 10px 0;
+  }
+  .prompt-box .val { color: #90CAF9; }
+  .prompt-box .dim { color: #888; }
+  .claude-md {
+    background: #1a1a2e; border-radius: 8px; padding: 14px 18px;
+    font-family: monospace; font-size: 12px; color: #e0e0e0; line-height: 1.8; margin: 10px 0;
+  }
+  .claude-md .key { color: #81C784; }
+  .claude-md .val { color: #90CAF9; }
+  .claude-md .dim { color: #888; }
+  .session-diagram { display: flex; align-items: center; margin: 12px 0; }
+  .session-box { flex: 1; border-radius: 8px; padding: 12px; text-align: center; font-size: 12px; }
+  .session-box.ctx { background: #EBF8FF; border: 1.5px solid #2B6CB0; }
+  .session-box.claude { background: #F0FFF4; border: 1.5px solid #4A7C59; }
+  .session-box.out { background: #FFF5F5; border: 1.5px solid #C53030; }
+  .arrow { font-size: 18px; color: #999; padding: 0 8px; flex-shrink: 0; }
+  .session-label { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .token-diagram { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+  .token-row { display: flex; align-items: center; gap: 10px; }
+  .token-label { width: 90px; font-size: 12px; color: #666; text-align: right; flex-shrink: 0; }
+  .token-bar-wrap { flex: 1; background: #eee; border-radius: 4px; height: 20px; overflow: hidden; }
+  .token-bar { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; color: white; font-weight: 600; }
+  .token-bar.full { width: 100%; background: #C53030; }
+  .token-bar.mid { width: 55%; background: #D69E2E; }
+  .token-bar.small { width: 25%; background: #4A7C59; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .card { border-radius: 8px; padding: 12px 14px; }
+  .card.good { background: #F0FFF4; border: 1.5px solid #4A7C59; }
+  .card.bad { background: #FFF5F5; border: 1.5px solid #C53030; }
+  .card-label { font-weight: 700; font-size: 12px; margin-bottom: 6px; }
+  .card.good .card-label { color: #4A7C59; }
+  .card.bad .card-label { color: #C53030; }
+  .card ul { padding-left: 14px; font-size: 12px; line-height: 1.8; }
+  .tips { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .tip { display: flex; gap: 10px; align-items: flex-start; background: #f7f7f7; border-radius: 8px; padding: 10px 14px; }
+  .tip-icon { font-size: 16px; flex-shrink: 0; }
+  .tip-text { font-size: 13px; }
+  .tip-text strong { display: block; margin-bottom: 2px; }
+  .karpathy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .kp-card { border-radius: 8px; padding: 14px; border: 1.5px solid #6B46C1; background: #FAF5FF; }
+  .kp-num { font-size: 11px; font-weight: 700; color: #6B46C1; margin-bottom: 4px; }
+  .kp-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .kp-rule { font-size: 12px; color: #444; margin-bottom: 6px; font-style: italic; }
+  .kp-example { font-size: 12px; color: #666; padding: 6px 8px; background: white; border-radius: 4px; border-left: 3px solid #6B46C1; }
+  .voice-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #E9D8FD; border: 1.5px solid #6B46C1;
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 12px; font-weight: 600; color: #44337A; margin: 8px 0;
+  }
+  .divider { border: none; border-top: 1px solid #e5e5e5; margin: 24px 0; }
+</style>
+</head>
+<body>
+<div class="guide">
+  <h1>Lizards × Claude 入門ガイド</h1>
+  <p class="subtitle">毎年引き継いで使うための基本セットアップ</p>
+
+  <!-- STEP 0 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s0">0</div>
+      <div class="step-title">最初の一歩：まずClaudeに相談する</div>
+    </div>
+    <p style="font-size:13px;margin-bottom:12px;">環境を整える前に、<strong>「自分がClaudeで何をやりたいか」をClaudeに話してみる</strong>ところから始める。何を準備すればいいか、どう進めるかをClaudeが一緒に考えてくれる。</p>
+    <div class="highlight-box red">
+      <p style="font-size:13px;font-weight:700;margin-bottom:8px;">最初にClaudeに投げるプロンプト（例）</p>
+      <div class="prompt-box">
+        <div><span class="val">自分は名大ラクロス部の育成担当（大学院生）。</span></div>
+        <div><span class="val">Claudeを使って〇〇をやりたいと思っている。</span></div>
+        <div><span class="val">どのように進めたらいい？</span></div>
+        <div><span class="val">どんな情報を準備しておけばいい？</span></div>
+        <div><span class="val">環境はどう整えればいい？</span></div>
+        <div style="margin-top:6px;"><span class="dim">← やりたいことを自分の言葉で話すだけでOK</span></div>
+      </div>
+    </div>
+    <div class="voice-badge">🎙 音声入力がおすすめ</div>
+    <p style="font-size:12px;color:#666;margin-top:4px;">Mac：fn fn / iPhone：マイクボタン。しゃべるだけで入力できる。</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s1">1</div>
+      <div class="step-title">準備：環境をつくる</div>
+    </div>
+    <p style="font-size:13px;margin-bottom:10px;">Googleドライブ（または使いやすい場所）に、Claudeに渡す情報をまとめるフォルダを作る。構成はあくまで一例。自分がやりやすい形でOK。</p>
+    <div class="folder-tree">
+      <div><span class="folder">📁 Lizards_Claude/</span> <span class="file-comment">← 名前も自由</span></div>
+      <div>&nbsp;&nbsp;<span>CLAUDE.md</span> <span class="file-comment">← チームの前提・ルール</span></div>
+      <div>&nbsp;&nbsp;<span>引き継ぎサマリー.md</span> <span class="file-comment">← 毎年追記</span></div>
+      <div>&nbsp;&nbsp;<span class="folder">📁 past/</span> <span class="file-comment">← 過去の振り返り・生データ</span></div>
+      <div>&nbsp;&nbsp;<span class="folder">📁 current/</span> <span class="file-comment">← 今年度の作業中資料</span></div>
+    </div>
+    <div class="note">これはサンプル。フォルダ名・構成は自分なりに変えてOK。</div>
+
+    <p style="font-size:13px;margin-bottom:8px;margin-top:16px;"><strong>CLAUDE.md</strong> — Claudeに毎回読ませる「チームの説明書」。セッション開始時に貼るだけでClaudeが文脈を把握する。</p>
+    <div class="claude-md">
+      <div><span class="key"># Lizardsについて</span></div>
+      <div><span class="val">名大ラクロス部。学生日本一を目標。</span></div>
+      <div><span class="key"># 育成プロジェクトの目的</span></div>
+      <div><span class="val">1年生の早期育成。知識の継続蓄積。</span></div>
+      <div><span class="key"># やってはいけないこと（ガードレール）</span></div>
+      <div><span class="val">- 個人名を外部に出さない</span></div>
+      <div><span class="val">- 過去の記録を削除・上書きしない</span></div>
+      <div><span class="key"># 今年の担当</span></div>
+      <div><span class="val">玉林（M2）/ 2026年度</span></div>
+      <div style="margin-top:8px;"><span class="dim"># ← 他に何を書けばいい？Claudeに聞いてみる</span></div>
+    </div>
+    <div class="note">このサンプルはあくまで出発点。<strong>何を書けばいいか分からなければ「育成担当として何を書いておくべき？」とClaudeに聞く。</strong>自分で必要だと思う内容を足していく。</div>
+
+    <p style="font-size:13px;margin-bottom:8px;margin-top:16px;font-weight:700;">ガードレールもClaudeに聞いて決める</p>
+    <div class="highlight-box green">
+      <p style="font-size:12px;margin-bottom:8px;">「やってほしくないこと」をCLAUDE.mdに書いておくと、毎回言わなくて済む。何を書けばいいか分からない場合は：</p>
+      <div class="prompt-box">
+        <div><span class="val">ラクロス部の育成担当としてClaudeを使う。</span></div>
+        <div><span class="val">どんなガードレール（やってはいけないこと）を</span></div>
+        <div><span class="val">CLAUDE.mdに書いておくべき？</span></div>
+      </div>
+      <p style="font-size:12px;margin-top:8px;">→ 出てきた提案の中から、自分に必要なものだけ入れる。</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s2">2</div>
+      <div class="step-title">基本の使い方：セッションとトークン管理</div>
+    </div>
+    <p style="font-size:13px;margin-bottom:12px;"><strong>Claudeはセッションをまたいで記憶しない。</strong>毎回「渡す」ことでカバーする。</p>
+    <div class="session-diagram">
+      <div class="session-box ctx"><div class="session-label">コンテキスト</div><div>CLAUDE.md<br>+ 必要な資料</div></div>
+      <div class="arrow">→</div>
+      <div class="session-box claude"><div class="session-label">Claude</div><div>セッション内だけ記憶</div></div>
+      <div class="arrow">→</div>
+      <div class="session-box out"><div class="session-label">終了で消える</div><div>次回また渡す</div></div>
+    </div>
+    <p style="font-size:13px;margin-top:16px;margin-bottom:8px;"><strong>1つのトピック = 1つのセッション。</strong>話題が変わったら新しいセッションを開く。</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <div style="flex:1;background:#EBF8FF;border-radius:6px;padding:10px;font-size:12px;border:1.5px solid #2B6CB0;"><strong>練習メニューを考える</strong><br>→ 専用セッション</div>
+      <div style="flex:1;background:#EBF8FF;border-radius:6px;padding:10px;font-size:12px;border:1.5px solid #2B6CB0;"><strong>振り返り文書をまとめる</strong><br>→ 別セッション</div>
+      <div style="flex:1;background:#EBF8FF;border-radius:6px;padding:10px;font-size:12px;border:1.5px solid #2B6CB0;"><strong>1年生へのフィードバック</strong><br>→ また別セッション</div>
+    </div>
+    <p style="font-size:13px;margin-bottom:8px;font-weight:700;">トークン管理：最初から仕組みを作る</p>
+    <div class="highlight-box blue">
+      <p style="font-size:12px;margin-bottom:10px;">トークン（Claudeが一度に処理できる量）には上限がある。最初から節約できる構成にしておくと、長期間快適に使える。</p>
+      <div class="token-diagram">
+        <div class="token-row"><div class="token-label">生データ全部</div><div class="token-bar-wrap"><div class="token-bar full">すぐ限界 ×</div></div></div>
+        <div class="token-row"><div class="token-label">振り返り全文</div><div class="token-bar-wrap"><div class="token-bar mid">重い △</div></div></div>
+        <div class="token-row"><div class="token-label">サマリー+必要分</div><div class="token-bar-wrap"><div class="token-bar small">軽くて速い ◎</div></div></div>
+      </div>
+      <p style="font-size:12px;margin-top:10px;"><strong>仕組みづくりの基本3つ：</strong></p>
+      <ul style="padding-left:16px;font-size:12px;line-height:2;margin-top:4px;">
+        <li>生データは <code>past/</code> に入れて、普段は渡さない</li>
+        <li>引き継ぎサマリーだけを毎回渡す（詳細は必要なときだけ）</li>
+        <li>1セッション1テーマで長引かせない</li>
+      </ul>
+      <div class="prompt-box" style="margin-top:10px;">
+        <div><span class="dim">← どう節約するかもClaudeに聞ける</span></div>
+        <div><span class="val">「ラクロス部の資料管理でトークンを節約する</span></div>
+        <div><span class="val">&nbsp;フォルダ構成やルールを提案して」</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s3">3</div>
+      <div class="step-title">勘所：うまく使うために</div>
+    </div>
+    <div class="cards">
+      <div class="card good">
+        <div class="card-label">◎ 良いインプット</div>
+        <ul>
+          <li>背景・目的を最初に書く</li>
+          <li>「〇〇したい。△△の観点で」</li>
+          <li>アウトプット形式を指定する</li>
+          <li>分からないことはそのまま聞く</li>
+          <li>短いセッションを何度も使う</li>
+        </ul>
+      </div>
+      <div class="card bad">
+        <div class="card-label">× 悪いインプット</div>
+        <ul>
+          <li>「いい感じにして」だけ</li>
+          <li>大量の文章をとりあえず全貼り</li>
+          <li>1セッションで何でも聞く</li>
+          <li>前回の話を前提にして話す</li>
+          <li>個人名をそのまま入れる</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="font-size:13px;margin-top:20px;margin-bottom:8px;"><strong>Andrej Karpathy（元Tesla AI責任者）の4原則 — Lizards版</strong></p>
+    <div class="karpathy-grid">
+      <div class="kp-card">
+        <div class="kp-num">原則 1</div>
+        <div class="kp-title">考えてから動く</div>
+        <div class="kp-rule">「曖昧なら動くな、聞け」</div>
+        <div class="kp-example">Claudeが確認してきたら答える。無視すると的外れな答えが返る。</div>
+      </div>
+      <div class="kp-card">
+        <div class="kp-num">原則 2</div>
+        <div class="kp-title">シンプルに頼む</div>
+        <div class="kp-rule">「頼んだ以上のことはさせない」</div>
+        <div class="kp-example">「練習メニューを考えて」だけで十分。年間計画まで勝手に作られると困る。</div>
+      </div>
+      <div class="kp-card">
+        <div class="kp-num">原則 3</div>
+        <div class="kp-title">触れた部分だけ変える</div>
+        <div class="kp-rule">「関係ない部分を勝手に編集しない」</div>
+        <div class="kp-example">「この段落を直して」と言ったら、他は変えないように指定する。</div>
+      </div>
+      <div class="kp-card">
+        <div class="kp-num">原則 4</div>
+        <div class="kp-title">ゴールを先に定義する</div>
+        <div class="kp-rule">「成功の条件を最初に言う」</div>
+        <div class="kp-example">「1年生が自主練できるようになる」を目標として伝えてからメニューを考えさせる。</div>
+      </div>
+    </div>
+
+    <div class="tips" style="margin-top:16px;">
+      <div class="tip">
+        <div class="tip-icon">💡</div>
+        <div class="tip-text">
+          <strong>分からないことはまずClaudeに聞く</strong>
+          「何を書けばいい？」「どう使えばいい？」— 検索より先にClaudeに投げると速い
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🔄</div>
+        <div class="tip-text">
+          <strong>引き継ぎは年度末に10分だけ</strong>
+          引き継ぎサマリー.mdに「今年やったこと・失敗・来年への申し送り」を追記して終わり
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

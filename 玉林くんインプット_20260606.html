@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ラクロス育成 × AI活用 知見ストック</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+      background: #f5f5f0;
+      color: #1a1a1a;
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+
+    /* ヘッダー */
+    .site-header {
+      margin-bottom: 48px;
+    }
+    .site-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+    .site-header p {
+      font-size: 13px;
+      color: #888;
+    }
+
+    /* 目次 */
+    .toc {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 48px;
+    }
+    .toc h2 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #999;
+      margin-bottom: 14px;
+    }
+    .toc ul { list-style: none; }
+    .toc ul li { margin-bottom: 8px; }
+    .toc ul li a {
+      font-size: 14px;
+      color: #555;
+      text-decoration: none;
+    }
+    .toc ul li a:hover { color: #000; }
+    .toc ul li .toc-date {
+      font-size: 12px;
+      color: #bbb;
+      margin-left: 8px;
+    }
+
+    /* セッション */
+    .session {
+      background: #fff;
+      border-radius: 12px;
+      padding: 36px 40px;
+      margin-bottom: 32px;
+    }
+    .session-header {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .session-date {
+      font-size: 13px;
+      color: #aaa;
+      white-space: nowrap;
+    }
+    .session-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .session-members {
+      font-size: 12px;
+      color: #bbb;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    /* セクション */
+    .section { margin-bottom: 28px; }
+    .section h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    .section ul { list-style: none; padding: 0; }
+    .section ul li {
+      font-size: 14px;
+      padding: 6px 0 6px 16px;
+      border-bottom: 1px solid #f8f8f8;
+      position: relative;
+    }
+    .section ul li::before {
+      content: "·";
+      position: absolute;
+      left: 0;
+      color: #ccc;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    /* 思想ブロック */
+    .insight-block {
+      background: #f9f9f7;
+      border-left: 3px solid #d0d0c8;
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+    }
+    .insight-block .insight-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .insight-block .insight-body {
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* テーブル */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    th {
+      text-align: left;
+      padding: 8px 12px;
+      background: #f5f5f0;
+      color: #888;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="site-header">
+    <h1>ラクロス育成 × AI活用 知見ストック</h1>
+    <p>会議のたびに更新 — 最終更新 2026-06-06</p>
+  </div>
+
+  <!-- 目次 -->
+  <div class="toc">
+    <h2>Sessions</h2>
+    <ul>
+      <li>
+        <a href="#session-20260606">AIでできること・育成への活かし方</a>
+        <span class="toc-date">2026-06-06</span>
+      </li>
+      <!-- 今後のセッションはここに追加 -->
+    </ul>
+  </div>
+
+  <!-- セッション 2026-06-06 -->
+  <div class="session" id="session-20260606">
+    <div class="session-header">
+      <span class="session-date">2026-06-06</span>
+      <span class="session-title">AIでできること・育成への活かし方</span>
+      <span class="session-members">あみん × 玉林</span>
+    </div>
+
+    <div class="section">
+      <h3>1. AIでできることの全体像</h3>
+      <p style="font-size:13px; font-weight:600; color:#aaa; margin-bottom:8px;">得意なこと</p>
+      <ul>
+        <li>大量のテキストを読んで、必要な情報を探してくる</li>
+        <li>人間が書いたメモや資料をもとに、文章・一覧・表を生成する</li>
+        <li>繰り返し発生する作業（フィードバック・集計・整理）を自動化する</li>
+        <li>指示を自然な言葉（話し言葉でも）で受け取って動く</li>
+        <li>他のツール（GoogleドライブやSlackなど）と繋いで横断的に動く</li>
+      </ul>
+      <p style="font-size:13px; font-weight:600; color:#aaa; margin: 16px 0 8px;">苦手なこと・限界</p>
+      <ul>
+        <li>入力された情報以上のことはわからない</li>
+        <li>使う人がいなくなると止まる（自分では動き続けない）</li>
+        <li>最初の設定・仕組みづくりには多少の手間がかかる</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>2. AIとの向き合い方（思想）</h3>
+      <div class="insight-block">
+        <div class="insight-title">「1と10を人間がやって、間の8はAIに任せる」</div>
+        <div class="insight-body">最初に「こういうことがしたい」を入れるのと、出てきたものを判断する最後だけ人間がやる。その間の工程はAIに出し切る。</div>
+      </div>
+      <div class="insight-block">
+        <div class="insight-title">「頭を使えばできることを、いかに頭を使わずにできるようにするか」</div>
+        <div class="insight-body">自分の時間と思考を、AIでは出せないこと（ふとしたアイデア、判断、関係性）に使う。ルーティンや単純工程はAIに渡す。</div>
+      </div>
+      <div class="insight-block">
+        <div class="insight-title">「自分のもう一人の自分を作っている感覚」</div>
+        <div class="insight-body">自分の思想・判断基準・知見をAIに入れておくことで、自分が手を動かさなくても自分らしいアウトプットが出てくる状態を目指す。チームの知見を入れれば、チームのもう一人の自分になる。</div>
+      </div>
+      <div class="insight-block">
+        <div class="insight-title">「触ると使えるようになる。使うとやりたいことが増える」</div>
+        <div class="insight-body">最初の試行錯誤を乗り越えれば、あとは触るほど用途が広がる。まず動かして「すごい」と思える体験を作ることが入口。</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>3. 実際に始めるとしたらどうするか</h3>
+      <p style="font-size:13px; margin-bottom:12px;">まずここから：<strong>既存資料をAIが読める形にする</strong></p>
+      <ul style="margin-bottom:16px;">
+        <li>GoogleドライブにあるドキュメントをMD形式（テキストファイル）に変換してまとめる</li>
+        <li>Claudeと繋いで「この資料の中から〇〇を教えて」と聞けるようにする</li>
+        <li>使いながら情報を追加していく</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>4. 育成コーチ業務への活かし方（補足）</h3>
+      <ul>
+        <li>練習反省の蓄積：テキストで溜めておけば「過去に似たケースは？」と聞くだけで引き出せる</li>
+        <li>バディ管理：報告が集まる場所と繋げれば実施状況を自動集計できる</li>
+        <li>フィードバック生成：判断基準を入れておけば原案を自動生成、コーチは確認するだけ</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>5. 知っておくべき注意点</h3>
+      <ul>
+        <li>入れた情報しか使えない。最初の資料投入が大事</li>
+        <li>使う人が続けないと止まる。「誰かが使い続ける動線」の設計が最重要</li>
+        <li>出力は必ず人間が確認する</li>
+        <li>Claude有料プランが必要（月額約3,000円〜）。費用負担の検討が必要</li>
+      </ul>
+    </div>
+
+  </div>
+  <!-- /session-20260606 -->
+
+  <!-- 今後のセッションはここに追加 -->
+
+</div>
+</body>
+</html>
